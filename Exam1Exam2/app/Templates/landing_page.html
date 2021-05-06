@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %} Home {% endblock %}
+
+
+{% block style %}
+<style>
+    a {
+        font-size: 64px;
+    }
+    a:hover {
+        color:red;
+    }
+    .col {
+        background-color: #f4eeff;
+    }
+    .col:hover {
+        background-color: #dcd6f7;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <div class="col" style="display: flex; align-items: center; justify-content: center;">
+                <a href="{% url 'todoView' %}">TODO LIST</a>
+            </div>
+            <div class="col" style="display: flex; align-items: center; justify-content: center;">
+                <a href="{% url 'emailView' %}">EMAIL</a>
+            </div>
+        </div>
+
+    </div>
+
+
+{% endblock %}
