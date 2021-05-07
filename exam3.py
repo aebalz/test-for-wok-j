@@ -1,6 +1,6 @@
 # Test Exam 3
 
-list_test = [7,2,1,3,5,6,4]
+list_test = [7,2,1,3,5,16,4,5]
 
 max_number = list_test[0]
 index_number = 0
