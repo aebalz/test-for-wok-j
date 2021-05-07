@@ -9,33 +9,27 @@
         font-size: 20px;
     }
 </style>
+<script>
+    $(document).ready( function () {
+        $('#myTable').DataTable();
+    } );
+</script>
 {% endblock %}
 
 {% block content %}
 
     <div class="container mt-5">
-        <h3><b>Create Todo List</b></h3>
+        <div class="row">
+            <div class="col"><h3><b>TODO LIST</b></h3></div>
+            <div class="col text-end">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Create Todo list</button>
+            </div>
+        </div>
         <hr>
         <form method="POST">
             {% csrf_token %}
-            <div class="mb-3">
-                <label for="InputTodoTitle" class="form-label">Title</label>
-                <input type="text" class="form-control" id="InputTodoTitle" name="title" placeholder="หัวข้อ" autocomplete="off" required>
-            </div>
-            <div class="mb-3">
-                <label for="InputTodoDetail" class="form-label">Detail</label>
-                <textarea class="form-control" id="InputTodoDetail" name="detail" placeholder="รายละเอียด" autocomplete="off" required></textarea>
-            </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </div>
-
-    <div class="container mt-5">
-        <h3><b>TODO LIST</b></h3>
-        <hr>
-        <form method="POST">
-            {% csrf_token %}
-            <table class="table">
+            <table class="table table-striped" id="myTable">
                 <thead>
                     <tr>
                         <th scope="col" style="width:5%">#</th>
@@ -47,17 +41,117 @@
                 </thead>
                 <tbody>
                     {% for todo in todo_all %}
-                        <tr>
+                        <tr class="table-tr">
                             <td>{{forloop.counter}}</td>
                             <td>{{todo.title}}</td>
                             <td>{{todo.detail}}</td>
                             <td>{{todo.create_date}}</td>
-                            <td style="text-align: center;"><a href="{% url 'todoDelete' todo.id %}"><i class="bi bi-x-circle" style="color:red;"></i></a></td>
+                            <td style="text-align: center;">
+                                <a href="" data-bs-toggle="modal" data-bs-target="#todoModalSetting{{forloop.counter}}"><span class="material-icons" style="color: BlueViolet;">settings</span></a>
+                                <a href="" data-bs-toggle="modal" data-bs-target="#todoModalDelete{{forloop.counter}}"><span class="material-icons" style="color:red;">delete_outline</span></a>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </form>
     </div>
+
+    <!-- Modal Create -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ModalLabel"><b>Create Todo List</b></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="InputTodoTitle" class="form-label"><b>Title</b></label>
+                            <input type="text" class="form-control" id="InputTodoTitle" name="title" placeholder="หัวข้อ"
+                                   autocomplete="off" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="InputTodoDetail" class="form-label"><b>Detail</b></label>
+                            <textarea class="form-control" id="InputTodoDetail" name="detail" placeholder="รายละเอียด"
+                                      autocomplete="off" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% for todo in todo_all %}
+    <!-- Modal Setting -->
+    <div class="modal fade" id="todoModalSetting{{forloop.counter}}" tabindex="-1" aria-labelledby="SettingModalLabel{{forloop.counter}}" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <form method="POST" action="{% url 'todoSetting' todo.id %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="SettingModalLabel{{forloop.counter}}"><b>Setting Todo List</b></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="InputTodoTitle" class="form-label"><b>Title</b></label>
+                            <input type="text" class="form-control" id="SettingTodoTitle{{forloop.counter}}" name="setTitle" placeholder="หัวข้อ"
+                                   autocomplete="off" required value="{{todo.title}}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="InputTodoDetail" class="form-label"><b>Detail</b></label>
+                            <textarea class="form-control" id="SettingTodoDetail{{forloop.counter}}" name="setDetail" placeholder="รายละเอียด"
+                                      autocomplete="off" rows="3" required>{{todo.detail}}</textarea>
+                        </div>
+                        <div class="text-end">
+                            <small>Create date : {{todo.create_date}}</small><br>
+                            <small class="text-end">Update date : {{todo.update_date}}</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning" name="setTodo">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="todoModalDelete{{forloop.counter}}" tabindex="-1" aria-labelledby="DeleteModalLabel{{forloop.counter}}" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <form method="POST" action="{% url 'todoDelete' todo.id %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="DeleteModalLabel{{forloop.counter}}"><b>Are you sure you want to delete this item?</b></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="InputTodoTitle" class="form-label"><b>Title</b></label>
+                            <input type="text" class="form-control" id="DeleteTodoTitle{{forloop.counter}}" name="setTitle" placeholder="หัวข้อ"
+                                   autocomplete="off" required value="{{todo.title}}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="InputTodoDetail" class="form-label"><b>Detail</b></label>
+                            <textarea class="form-control" id="DeleteTodoDetail{{forloop.counter}}" name="setDetail" placeholder="รายละเอียด"
+                                      autocomplete="off" rows="3" readonly required>{{todo.detail}}</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger" name="deleteTodo">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 
 {% endblock %}

@@ -21,9 +21,21 @@ def todoListViews(request):
     return render(request, 'todolist.html', context)
 
 
+def todoListSetting(request, id):
+    if request.method == "POST":
+        if "setTodo" in request.POST:
+            todo_set = Todo_list.objects.get(id=id)
+            todo_set.title = request.POST['setTitle']
+            todo_set.detail = request.POST['setDetail']
+            todo_set.save()
+    return redirect('todoView')
+
+
 def todoListDelete(request, id):
-    todo_model = Todo_list.objects.get(id=id)
-    todo_model.delete()
+    if request.method == "POST":
+        if "deleteTodo" in request.POST:
+            todo_model = Todo_list.objects.get(id=id)
+            todo_model.delete()
     return redirect('todoView')
 
 
@@ -38,3 +50,9 @@ def emailReply(request):
         return redirect('emailView')
     context = {'emails': Email.objects.all()}
     return render(request, 'email_reply.html', context)
+
+
+def emailDelete(request, id):
+    email_model = Email.objects.get(id=id)
+    email_model.delete()
+    return redirect('emailView')
